@@ -8,9 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          for u in https://juliog241.github.io/Picolargo/ https://juliog241.github.io/picolargo/; do
+          for u in https://juliog241.github.io/PICOLARGO/ https://juliog241.github.io/Picolargo/ https://juliog241.github.io/picolargo/; do
             code=$(curl -s -o page.html -w '%{http_code}' -L "$u")
             echo "$u -> $code"
             grep -o '<title>[^<]*' page.html || true
           done
-          curl -sf https://juliog241.github.io/Picolargo/ | grep -q 'Pico Largo'
+          curl -sf https://juliog241.github.io/PICOLARGO/ | grep -q 'Pico Largo'
