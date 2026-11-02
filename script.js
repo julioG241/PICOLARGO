@@ -1,5 +1,5 @@
 // Las respuestas del formulario llegan a este correo (vía FormSubmit.co)
-const FORM_EMAIL = 'eugenia.gonzalezgomez@udem.com';
+const FORM_EMAIL = 'eugenia.gonzalezgomez@udem.edu';
 const FORM_URL = 'https://formsubmit.co/ajax/' + FORM_EMAIL;
 
 const EN = {
