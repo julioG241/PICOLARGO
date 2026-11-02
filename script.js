@@ -154,11 +154,26 @@ form.addEventListener('submit', async e => {
     form.reset();
     status.className = 'form__status ok'; status.textContent = MSG[lang].ok;
   } catch (err) {
-    status.className = 'form__status err'; status.textContent = MSG[lang].err;
+    // Si el envío directo falla (p. ej. formulario aún sin activar o bloqueo del navegador),
+    // se envía de forma tradicional a FormSubmit, que luego regresa a esta página.
+    status.className = 'form__status'; status.textContent = MSG[lang].sending;
+    const next = document.createElement('input');
+    next.type = 'hidden'; next.name = '_next';
+    next.value = location.origin + location.pathname + '?enviado=1#contacto';
+    form.appendChild(next);
+    form.action = 'https://formsubmit.co/' + FORM_EMAIL;
+    form.method = 'POST';
+    HTMLFormElement.prototype.submit.call(form);
+    return;
   } finally {
     submit.disabled = false;
   }
 });
 $$('input,textarea', form).forEach(f => f.addEventListener('input', () => f.closest('.field')?.classList.remove('invalid')));
+
+if (new URLSearchParams(location.search).has('enviado')) {
+  status.className = 'form__status ok'; status.textContent = MSG[lang].ok;
+  history.replaceState(null, '', location.pathname + '#contacto');
+}
 
 $('#year').textContent = new Date().getFullYear();
