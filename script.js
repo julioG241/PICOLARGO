@@ -1,6 +1,6 @@
-// Las respuestas del formulario llegan a este correo (vía FormSubmit.co)
-const FORM_EMAIL = 'eugenia.gonzalezgomez@udem.edu';
-const FORM_URL = 'https://formsubmit.co/ajax/' + FORM_EMAIL;
+// Las respuestas del formulario llegan a eugenia.gonzalezgomez@udem.edu vía Web3Forms.
+// El correo de destino está ligado a la "access_key" del formulario en index.html.
+const FORM_URL = 'https://api.web3forms.com/submit';
 
 const EN = {
   'skip': 'Skip to content',
@@ -137,8 +137,9 @@ form.addEventListener('submit', async e => {
   if (!ok) { status.className = 'form__status err'; status.textContent = MSG[lang].invalid; return; }
 
   const data = Object.fromEntries(new FormData(form));
-  if (data._honey) return; // bot
-  data._replyto = data.Correo;
+  if (data.botcheck) return; // bot
+  delete data.botcheck;
+  data.replyto = data.Correo;
   data.Idioma = lang.toUpperCase();
 
   submit.disabled = true;
@@ -150,18 +151,18 @@ form.addEventListener('submit', async e => {
       body: JSON.stringify(data)
     });
     const j = await r.json().catch(() => ({}));
-    if (!r.ok || j.success === 'false' || j.success === false) throw new Error(j.message || r.status);
+    if (!r.ok || j.success !== true) throw new Error(j.message || r.status);
     form.reset();
     status.className = 'form__status ok'; status.textContent = MSG[lang].ok;
   } catch (err) {
-    // Si el envío directo falla (p. ej. formulario aún sin activar o bloqueo del navegador),
-    // se envía de forma tradicional a FormSubmit, que luego regresa a esta página.
+    // Si el envío directo falla, se envía de forma tradicional a Web3Forms,
+    // que luego regresa a esta página.
     status.className = 'form__status'; status.textContent = MSG[lang].sending;
     const next = document.createElement('input');
-    next.type = 'hidden'; next.name = '_next';
+    next.type = 'hidden'; next.name = 'redirect';
     next.value = location.origin + location.pathname + '?enviado=1#contacto';
     form.appendChild(next);
-    form.action = 'https://formsubmit.co/' + FORM_EMAIL;
+    form.action = FORM_URL;
     form.method = 'POST';
     HTMLFormElement.prototype.submit.call(form);
     return;
