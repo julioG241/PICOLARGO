@@ -1,0 +1,16 @@
+name: Verificar que el sitio funciona
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for u in https://juliog241.github.io/Picolargo/ https://juliog241.github.io/picolargo/; do
+            code=$(curl -s -o page.html -w '%{http_code}' -L "$u")
+            echo "$u -> $code"
+            grep -o '<title>[^<]*' page.html || true
+          done
+          curl -sf https://juliog241.github.io/Picolargo/ | grep -q 'Pico Largo'
