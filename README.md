@@ -9,3 +9,7 @@ Sitio de una sola página para Pico Largo (manzana deshidratada, Cd. Guerrero, C
 
 ## Publicar con GitHub Pages
 Settings → Pages → Source: *Deploy from a branch* → elige la rama y la carpeta `/ (root)` → Save.
+
+## Calendario 2027 (Inglés III · proyecto final)
+Página aparte en `calendar/index.html` → publicada en `/calendar/`.
+Para poner tu nombre y cumpleaños: botón **edit** en la página, o cambia `MY_NAME` y `MY_BIRTHDAY` al inicio del `<script>`.

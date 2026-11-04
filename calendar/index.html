@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Calendar 2027</title>
+<meta name="description" content="English III final project: a 2027 calendar with the seasons, the days of the week, the months of the year, ordinal numbers, my birthday and an important activity in every month.">
+<meta name="theme-color" content="#2f3a3d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='10' width='56' height='50' rx='8' fill='%23fff'/%3E%3Crect x='4' y='10' width='56' height='16' rx='8' fill='%23e53935'/%3E%3Ctext x='32' y='52' font-size='26' font-family='Arial' font-weight='bold' fill='%23333' text-anchor='middle'%3E27%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --board:#2f3a3d; --board-2:#26302f; --chalk:#f4f1ea; --ink:#2b2b2b; --muted:#5d6468;
+  --paper:#ffffff; --wall:#ece8e1; --wall-line:#dcd6cc;
+  --teal:#2ec4c6; --lime:#b5d334; --pink:#f06292; --yellow:#fdd835;
+  /* month colors (from the months & ordinal numbers chart) */
+  --m1:#00b2e8; --m2:#0288d1; --m3:#1e4fa0; --m4:#00968a; --m5:#007d40; --m6:#4caf50;
+  --m7:#f9c80e; --m8:#f05a24; --m9:#c0202a; --m10:#a8228f; --m11:#674ea7; --m12:#262877;
+  --spring:#f48fb1; --summer:#fbc02d; --autumn:#ef6c00; --winter:#4fc3f7;
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; font-family:Nunito,system-ui,sans-serif; color:var(--ink); line-height:1.5;
+  background-color:var(--wall);
+  /* white brick wall like the classroom board picture */
+  background-image:
+    linear-gradient(var(--wall-line) 2px, transparent 2px),
+    linear-gradient(90deg, var(--wall-line) 2px, transparent 2px),
+    linear-gradient(90deg, var(--wall-line) 2px, transparent 2px);
+  background-size:100% 40px, 120px 80px, 120px 80px;
+  background-position:0 0, 0 0, 60px 40px;
+}
+h1,h2,h3{font-family:Fredoka,Nunito,sans-serif;line-height:1.15;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+section{margin:40px 0}
+.section-title{
+  display:inline-block; font-size:clamp(1.6rem,4.5vw,2.4rem); color:#fff; background:var(--c,var(--m9));
+  padding:.35em .8em; border-radius:12px; transform:rotate(-1.2deg); box-shadow:0 6px 0 rgba(0,0,0,.12);
+  margin-bottom:18px;
+}
+.lead{font-size:1.08rem;color:var(--muted);margin:0 0 18px;max-width:70ch}
+
+/* ---------- Header ---------- */
+.top{padding:28px 0 8px;text-align:center}
+.top__school{font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:.8rem;color:var(--muted)}
+.top h1{font-size:clamp(2.6rem,9vw,5rem);color:var(--m9);margin:.15em 0 .1em;text-shadow:3px 3px 0 #fff}
+.top h1 span{color:var(--m2)}
+.top__meta{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+.chip{background:#fff;border-radius:999px;padding:6px 14px;font-weight:700;font-size:.92rem;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.chip button{font:inherit;border:0;background:none;color:var(--m2);cursor:pointer;text-decoration:underline;padding:0 0 0 4px}
+
+/* ---------- Classroom board ---------- */
+.board{
+  background:radial-gradient(circle at 30% 20%, #3a4649, var(--board) 60%, var(--board-2));
+  border:14px solid #c9a46b; border-radius:16px; padding:20px; color:var(--chalk);
+  box-shadow:0 14px 30px rgba(0,0,0,.25), inset 0 0 40px rgba(0,0,0,.35);
+  display:grid; gap:18px; grid-template-columns:240px 1fr 240px;
+}
+.panel{display:flex;flex-direction:column;gap:14px}
+.daycard{background:#fff;color:var(--ink);border-radius:12px;padding:10px 12px;text-align:center;border-top:12px solid var(--c)}
+.daycard small{display:block;font-weight:800;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.daycard strong{font-family:Fredoka;font-size:1.45rem;letter-spacing:.04em;text-transform:uppercase}
+.todayline{background:rgba(255,255,255,.08);border:2px dashed rgba(255,255,255,.35);border-radius:12px;padding:12px;font-size:1.02rem}
+.todayline b{color:var(--yellow)}
+
+.season-box{background:#fff;color:var(--ink);border-radius:12px;padding:12px;border:5px solid var(--teal)}
+.season-box h3{text-align:center;font-size:1.05rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.season-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.season-grid div{border-radius:10px;padding:6px 4px;text-align:center;font-weight:800;font-size:.85rem;background:#f3f3f3;opacity:.45;transition:.2s}
+.season-grid div .emo{display:block;font-size:1.8rem;line-height:1.1}
+.season-grid div.on{opacity:1;background:var(--sc);color:#fff;transform:scale(1.04);box-shadow:0 0 0 3px #fff,0 0 0 6px var(--sc)}
+.season-arrow{text-align:center;margin-top:8px;font-weight:800}
+
+.month-board{text-align:center}
+.mb-head{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.mb-title{background:var(--teal);color:#fff;font-family:Fredoka;font-size:clamp(1.4rem,4vw,2.1rem);padding:4px 18px;border-radius:6px;text-transform:uppercase;letter-spacing:.06em;min-width:9ch}
+.mb-year{background:var(--lime);color:var(--board);font-family:Fredoka;font-size:clamp(1.4rem,4vw,2.1rem);padding:4px 18px;border-radius:6px}
+.navbtn{width:42px;height:42px;border-radius:50%;border:0;background:#fff;color:var(--board);font-size:1.3rem;font-weight:800;cursor:pointer}
+.navbtn:disabled{opacity:.3;cursor:default}
+.weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:12px}
+.weekdays div{background:var(--pink);color:#fff;border-radius:6px;padding:4px 0;font-weight:800;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
+.weekdays div:nth-child(odd){background:#ff8a65}
+.weekdays .full{display:inline}.weekdays .short{display:none}
+.day{
+  aspect-ratio:1;border-radius:50%;border:0;display:grid;place-items:center;position:relative;
+  font-family:Fredoka;font-weight:600;font-size:clamp(.95rem,2.4vw,1.35rem);color:var(--board);cursor:pointer;
+  background:var(--dc,#fdf6c3);transition:transform .15s;
+}
+.day:hover,.day:focus-visible{transform:scale(1.1);outline:3px solid #fff}
+.day.has-event::after{content:attr(data-emo);position:absolute;top:-8px;right:-6px;font-size:.95rem}
+.day.is-bday{background:#fff;box-shadow:0 0 0 4px var(--pink)}
+.day.is-sel{box-shadow:0 0 0 4px var(--yellow)}
+.day.is-today{outline:3px dashed var(--yellow);outline-offset:2px}
+.day-info{margin-top:14px;min-height:3.2em;background:rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;font-size:1.05rem}
+.day-info b{color:var(--yellow)}
+
+.weather{background:#fff;color:var(--ink);border-radius:12px;padding:12px;border:5px solid var(--lime);text-align:center}
+.weather h3{font-size:1rem;text-transform:uppercase;letter-spacing:.05em}
+.weather .big{font-size:3.6rem;line-height:1.1;margin:6px 0}
+.weather p{margin:0;font-weight:700}
+.bday-card{background:#fff;color:var(--ink);border-radius:12px;padding:12px;border:5px solid var(--pink);text-align:center}
+.bday-card .big{font-size:3rem;line-height:1.1}
+.bday-card p{margin:4px 0 0;font-weight:700}
+.bday-card .count{font-size:.9rem;color:var(--muted);font-weight:600}
+
+/* ---------- Days of the week ---------- */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+.wk{background:#fff;border-radius:var(--radius);padding:14px 8px;text-align:center;border-bottom:8px solid var(--c);box-shadow:0 4px 0 rgba(0,0,0,.06)}
+.wk .n{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--c);color:#fff;font-family:Fredoka;font-weight:700}
+.wk h3{font-size:1.15rem;margin:.45em 0 .15em}
+.wk p{margin:0;font-size:.85rem;color:var(--muted);font-weight:700}
+
+/* ---------- Months & ordinals chart ---------- */
+.chart{width:100%;max-width:860px;border-collapse:separate;border-spacing:0 4px;font-family:Fredoka}
+.chart th{background:var(--yellow);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35);font-weight:600;padding:10px;font-size:1rem;letter-spacing:.03em}
+.chart th:first-child{border-radius:10px 0 0 10px}.chart th:last-child{border-radius:0 10px 10px 0}
+.chart td{background:var(--c);color:#fff;padding:10px 12px;text-align:center;font-size:clamp(1rem,2.6vw,1.45rem);font-weight:500;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.chart td:first-child{border-radius:10px 0 0 10px;font-weight:600}
+.chart td:last-child{border-radius:0 10px 10px 0;font-size:clamp(.85rem,2vw,1.05rem)}
+.chart sup{font-size:.6em}
+.chart td + td{border-left:3px solid rgba(255,255,255,.7)}
+
+/* ---------- Seasons ---------- */
+.seasons{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.season{background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:0 4px 0 rgba(0,0,0,.06)}
+.season__art{height:150px;display:grid;place-items:center;background:var(--bg)}
+.season__art svg{width:120px;height:120px}
+.season__body{padding:14px 16px 18px}
+.season h3{font-size:1.5rem;color:var(--sc)}
+.season .dates{font-weight:800;margin:.3em 0}
+.season ul{margin:.3em 0 .6em;padding-left:1.1em}
+.season p{margin:0;color:var(--muted)}
+
+/* ---------- Year at a glance ---------- */
+.year{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.mcard{background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:0 4px 0 rgba(0,0,0,.06);display:flex;flex-direction:column}
+.mcard__head{background:var(--c);color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.mcard__head h3{font-size:1.35rem}
+.mcard__head span{font-size:.78rem;font-weight:800;opacity:.95;text-transform:uppercase;letter-spacing:.04em}
+.mini{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:10px 10px 4px;text-align:center;font-size:.8rem}
+.mini b{color:var(--muted);font-size:.7rem}
+.mini i{font-style:normal;border-radius:50%;aspect-ratio:1;display:grid;place-items:center}
+.mini i.ev{background:var(--c);color:#fff;font-weight:800}
+.mini i.bd{background:var(--pink);color:#fff;font-weight:800}
+.mini i.sun{color:var(--m9)}
+.events{list-style:none;margin:0;padding:6px 12px 14px;display:grid;gap:6px;font-size:.92rem}
+.events li{display:grid;grid-template-columns:2.2em 3.3em 1fr;align-items:center;gap:4px}
+.events .emo{font-size:1.35rem;text-align:center}
+.events .d{font-weight:800;color:var(--c)}
+.events li.bd{background:#fde7ef;border-radius:8px;padding:2px 0}
+.mcard__season{margin:auto 12px 12px;font-size:.78rem;font-weight:800;color:var(--muted)}
+
+footer{text-align:center;padding:30px 16px 50px;color:var(--muted);font-size:.9rem}
+
+/* ---------- Personalize dialog ---------- */
+dialog{border:0;border-radius:18px;padding:22px;max-width:360px;width:calc(100% - 32px);box-shadow:0 20px 50px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog h3{margin-bottom:10px}
+dialog label{display:block;font-weight:700;margin:10px 0 4px}
+dialog input,dialog select{font:inherit;width:100%;padding:8px 10px;border:2px solid #ddd;border-radius:10px}
+.row{display:flex;gap:8px}
+.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.btn{font:inherit;font-weight:800;border:0;border-radius:999px;padding:8px 18px;cursor:pointer;background:#eee}
+.btn--go{background:var(--m2);color:#fff}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1000px){
+  .board{grid-template-columns:1fr 1fr}
+  .month-board{grid-column:1/-1;order:-1}
+  .year{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:760px){
+  .week{grid-template-columns:repeat(4,1fr)}
+  .seasons{grid-template-columns:1fr 1fr}
+  .year{grid-template-columns:1fr 1fr}
+  .weekdays .full{display:none}.weekdays .short{display:inline}
+}
+@media (max-width:520px){
+  .board{grid-template-columns:1fr;border-width:10px;padding:12px}
+  .weekdays,.days{gap:5px}
+  .mb-head{flex-wrap:nowrap;gap:6px}
+  .mb-title,.mb-year{font-size:1.15rem;padding:4px 8px;min-width:0;letter-spacing:.02em}
+  .navbtn{width:34px;height:34px;flex:none}
+  .week{grid-template-columns:repeat(2,1fr)}
+  .seasons,.year{grid-template-columns:1fr}
+  .chart td,.chart th{padding:8px 6px}
+}
+@media print{
+  body{background:#fff}
+  .navbtn,.chip button{display:none}
+  .mcard,.season,.wk{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="top wrap">
+  <div class="top__school">Preparatoria María Comadurán Chávez No. 4001 · English III · Final Project</div>
+  <h1>My Calendar <span>2027</span></h1>
+  <div class="top__meta">
+    <span class="chip">👤 <span id="who">Student: ________</span></span>
+    <span class="chip">🎂 <span id="bdayChip">My birthday: ________</span> <button type="button" id="editBtn">edit</button></span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- 1. Classroom board -->
+  <section aria-labelledby="t-board">
+    <h2 class="section-title" id="t-board" style="--c:var(--m4)">Our Calendar Board</h2>
+    <div class="board">
+      <div class="panel">
+        <div class="daycard" style="--c:var(--lime)"><small>Yesterday was</small><strong id="yday">—</strong></div>
+        <div class="daycard" style="--c:var(--teal)"><small>Today is</small><strong id="tday">—</strong></div>
+        <div class="daycard" style="--c:var(--pink)"><small>Tomorrow will be</small><strong id="tmrw">—</strong></div>
+        <div class="todayline" id="todayLine">Today is …</div>
+      </div>
+
+      <div class="month-board">
+        <div class="mb-head">
+          <button class="navbtn" id="prev" type="button" aria-label="Previous month">‹</button>
+          <span class="mb-title" id="mbMonth">January</span>
+          <span class="mb-year">2027</span>
+          <button class="navbtn" id="next" type="button" aria-label="Next month">›</button>
+        </div>
+        <div class="weekdays" id="mbWeek"></div>
+        <div class="days" id="mbDays"></div>
+        <div class="day-info" id="dayInfo" aria-live="polite">Tap a day to read the date in English.</div>
+      </div>
+
+      <div class="panel">
+        <div class="season-box">
+          <h3>What season is it?</h3>
+          <div class="season-grid" id="seasonGrid"></div>
+          <div class="season-arrow" id="seasonText"></div>
+        </div>
+        <div class="weather">
+          <h3>This month we celebrate</h3>
+          <div class="big" id="monthEmo">🎉</div>
+          <p id="monthEvent">—</p>
+        </div>
+        <div class="bday-card">
+          <div class="big">🎂</div>
+          <p id="bdayText">My birthday is on …</p>
+          <div class="count" id="bdayCount"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Days of the week -->
+  <section aria-labelledby="t-week">
+    <h2 class="section-title" id="t-week" style="--c:var(--m10)">Days of the Week</h2>
+    <p class="lead">A week has seven days. In our calendar, Sunday is the first day of the week and Saturday is the seventh day.</p>
+    <div class="week" id="week"></div>
+  </section>
+
+  <!-- 3. Months & ordinal numbers -->
+  <section aria-labelledby="t-months">
+    <h2 class="section-title" id="t-months" style="--c:var(--m9)">Months and Ordinal Numbers</h2>
+    <p class="lead">There are twelve months in a year. January is the first month and December is the twelfth month. We use ordinal numbers for dates: <b>May 10th</b> is read “May tenth”.</p>
+    <table class="chart">
+      <thead><tr><th>Month of the Year</th><th>Ordinal Number</th><th>Days · Season</th></tr></thead>
+      <tbody id="chart"></tbody>
+    </table>
+  </section>
+
+  <!-- 4. Seasons -->
+  <section aria-labelledby="t-seasons">
+    <h2 class="section-title" id="t-seasons" style="--c:var(--m6)">The Four Seasons</h2>
+    <p class="lead">In Chihuahua, Mexico (Northern Hemisphere), the year has four seasons: spring, summer, autumn (fall) and winter.</p>
+    <div class="seasons" id="seasons"></div>
+  </section>
+
+  <!-- 5. Year at a glance -->
+  <section aria-labelledby="t-year">
+    <h2 class="section-title" id="t-year" style="--c:var(--m2)">Important Dates in 2027</h2>
+    <p class="lead">Every month has an important activity. The colored circles show the special days, and the pink circle is my birthday.</p>
+    <div class="year" id="year"></div>
+  </section>
+</main>
+
+<footer>
+  English III · Teacher: Angélica Alonzo Mentado · Groups A, B, C, D<br>
+  Made with ❤️ for the first semester final project.
+</footer>
+
+<dialog id="dlg">
+  <form method="dialog" id="dlgForm">
+    <h3>Personalize my calendar</h3>
+    <label for="fName">My name</label>
+    <input id="fName" autocomplete="name" placeholder="Your name">
+    <label for="fMonth">My birthday</label>
+    <div class="row">
+      <select id="fMonth" aria-label="Birthday month"></select>
+      <select id="fDay" aria-label="Birthday day"></select>
+    </div>
+    <div class="actions">
+      <button class="btn" value="cancel" type="submit">Cancel</button>
+      <button class="btn btn--go" value="save" type="submit">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+/* ===== Change these two lines to your own name and birthday ===== */
+const MY_NAME = "";                 // e.g. "Ana López"
+const MY_BIRTHDAY = { month: 0, day: 0 };   // e.g. { month: 3, day: 15 } for March 15th
+/* ================================================================ */
+
+const YEAR = 2027;
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const ORD_WORDS = ["First","Second","Third","Fourth","Fifth","Sixth","Seventh","Eighth","Ninth","Tenth","Eleventh","Twelfth"];
+const DAY_COLORS = ["var(--m9)","var(--m2)","var(--m8)","var(--m5)","var(--m10)","var(--m4)","var(--m11)"];
+const CIRCLES = ["#fdf6c3","#c8f1f2","#ffd6e2","#dff3b5","#ffe0b8","#e5dcf7"];
+
+const SEASONS = {
+  winter:{name:"Winter",emo:"❄️",color:"var(--winter)",bg:"#e3f4fd",start:"December 21st",end:"March 19th",
+    months:["December","January","February"],text:"It is cold. We wear coats, and sometimes it snows in the mountains of Chihuahua."},
+  spring:{name:"Spring",emo:"🌸",color:"var(--spring)",bg:"#fde7ef",start:"March 20th",end:"June 20th",
+    months:["March","April","May"],text:"The weather is warm and windy. The apple trees have white flowers."},
+  summer:{name:"Summer",emo:"☀️",color:"var(--summer)",bg:"#fff6d5",start:"June 21st",end:"September 22nd",
+    months:["June","July","August"],text:"It is hot and sunny. It rains in the afternoon. We have summer vacation."},
+  autumn:{name:"Autumn (Fall)",emo:"🍂",color:"var(--autumn)",bg:"#ffe9d6",start:"September 23rd",end:"December 20th",
+    months:["September","October","November"],text:"The leaves change color and fall. It is the apple harvest season."}
+};
+// first day of each season in 2027 (month is 1-12)
+function seasonOf(m, d){
+  const md = m*100 + d;
+  if (md >= 1221 || md < 320) return "winter";
+  if (md < 621) return "spring";
+  if (md < 923) return "summer";
+  return "autumn";
+}
+
+// One or more important activities for every month of 2027
+const EVENTS = {
+  1:[[1,"🎉","New Year's Day"],[6,"👑","Three Kings' Day"]],
+  2:[[5,"📜","Constitution Day"],[14,"❤️","Valentine's Day"],[24,"🇲🇽","Flag Day"]],
+  3:[[20,"🌸","First day of spring"],[21,"🎩","Benito Juárez's Birthday"],[28,"🐰","Easter Sunday"]],
+  4:[[22,"🌎","Earth Day"],[30,"🎈","Children's Day"]],
+  5:[[5,"⚔️","Battle of Puebla"],[10,"💐","Mother's Day"],[15,"🍎","Teachers' Day"]],
+  6:[[20,"👔","Father's Day"],[21,"☀️","First day of summer"]],
+  7:[[4,"🇺🇸","Independence Day (USA)"],[12,"🏖️","Summer vacation"]],
+  8:[[12,"🧑‍🤝‍🧑","International Youth Day"],[23,"🎒","Back to school"]],
+  9:[[15,"🎆","“El Grito” night"],[16,"🇲🇽","Mexican Independence Day"],[23,"🍂","First day of autumn"]],
+  10:[[16,"🍞","World Food Day"],[31,"🎃","Halloween"]],
+  11:[[2,"💀","Day of the Dead"],[20,"🐎","Revolution Day"],[25,"🦃","Thanksgiving (USA)"]],
+  12:[[12,"🌹","Our Lady of Guadalupe Day"],[21,"❄️","First day of winter"],[25,"🎄","Christmas Day"],[31,"🥳","New Year's Eve"]]
+};
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,"0");
+function ordinal(n){
+  const s = (n%100>=11 && n%100<=13) ? "th" : ({1:"st",2:"nd",3:"rd"}[n%10] || "th");
+  return n + s;
+}
+const ordHTML = n => { const o = ordinal(n); return o.slice(0,-2) + "<sup>" + o.slice(-2) + "</sup>"; };
+const daysIn = (y,m) => new Date(y, m, 0).getDate(); // m is 1-12
+const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ----- personal data: URL ?name=&birthday=MM-DD, then saved data, then the constants ----- */
+function loadMe(){
+  const me = { name: MY_NAME, month: MY_BIRTHDAY.month, day: MY_BIRTHDAY.day };
+  try { Object.assign(me, JSON.parse(localStorage.getItem("myCalendar") || "{}")); } catch(e){}
+  const q = new URLSearchParams(location.search);
+  if (q.get("name")) me.name = q.get("name");
+  const b = (q.get("birthday") || "").match(/^(\d{1,2})-(\d{1,2})$/);
+  if (b) { me.month = +b[1]; me.day = +b[2]; }
+  if (!(me.month >= 1 && me.month <= 12 && me.day >= 1 && me.day <= daysIn(YEAR, me.month))) { me.month = 0; me.day = 0; }
+  return me;
+}
+let ME = loadMe();
+const isBday = (m,d) => ME.month === m && ME.day === d;
+const bdayText = () => ME.month ? `${MONTHS[ME.month-1]} ${ordinal(ME.day)}` : null;
+
+function eventsFor(m){
+  const list = EVENTS[m].map(e => ({d:e[0], emo:e[1], name:e[2]}));
+  if (ME.month === m) list.push({d:ME.day, emo:"🎂", name:"My birthday!", bday:true});
+  return list.sort((a,b) => a.d - b.d);
+}
+
+/* ----- header + birthday card ----- */
+function renderMe(){
+  $("who").textContent = ME.name ? `Student: ${ME.name}` : "Student: ________";
+  const bt = bdayText();
+  $("bdayChip").textContent = bt ? `My birthday: ${bt}` : "My birthday: ________";
+  $("bdayText").textContent = bt ? `My birthday is on ${bt}.` : "Tap “edit” at the top to add your birthday.";
+  if (bt){
+    const now = new Date(); now.setHours(0,0,0,0);
+    let next = new Date(now.getFullYear(), ME.month-1, ME.day);
+    if (next < now) next = new Date(now.getFullYear()+1, ME.month-1, ME.day);
+    const left = Math.round((next - now) / 864e5);
+    const wd = DAYS[new Date(YEAR, ME.month-1, ME.day).getDay()];
+    $("bdayCount").textContent = left === 0 ? "Happy birthday! It is today! 🎉"
+      : `In 2027 it is on a ${wd}. Only ${left} day${left===1?"":"s"} to go!`;
+  } else $("bdayCount").textContent = "";
+}
+
+/* ----- today panel ----- */
+function renderToday(){
+  const t = new Date();
+  const y = new Date(t); y.setDate(t.getDate()-1);
+  const n = new Date(t); n.setDate(t.getDate()+1);
+  $("yday").textContent = DAYS[y.getDay()];
+  $("tday").textContent = DAYS[t.getDay()];
+  $("tmrw").textContent = DAYS[n.getDay()];
+  const s = SEASONS[seasonOf(t.getMonth()+1, t.getDate())];
+  $("todayLine").innerHTML = `Today is <b>${DAYS[t.getDay()]}, ${MONTHS[t.getMonth()]} ${ordinal(t.getDate())}, ${t.getFullYear()}</b>. It is the ${ORD_WORDS[t.getMonth()].toLowerCase()} month of the year, and the season is <b>${s.name.toLowerCase()}</b>.`;
+  $("seasonGrid").innerHTML = ["spring","summer","autumn","winter"].map(k => {
+    const v = SEASONS[k];
+    return `<div class="${v===s?"on":""}" style="--sc:${v.color}"><span class="emo">${v.emo}</span>${v.name.split(" ")[0]}</div>`;
+  }).join("");
+  $("seasonText").textContent = `It is ${s.name.split(" ")[0].toLowerCase()}!`;
+}
+
+/* ----- interactive month board ----- */
+let cur = new Date().getMonth() + 1, sel = null;
+function describe(m, d){
+  const wd = DAYS[new Date(YEAR, m-1, d).getDay()];
+  const evs = eventsFor(m).filter(e => e.d === d);
+  const s = SEASONS[seasonOf(m, d)].name.split(" ")[0].toLowerCase();
+  let h = `<b>${wd}, ${MONTHS[m-1]} ${ordinal(d)}, ${YEAR}</b> — it is ${s}.`;
+  if (evs.length) h += " " + evs.map(e => `${e.emo} ${esc(e.name)}`).join(" · ");
+  return h;
+}
+function renderBoard(){
+  $("mbMonth").textContent = MONTHS[cur-1];
+  $("prev").disabled = cur === 1; $("next").disabled = cur === 12;
+  $("mbWeek").innerHTML = DAYS.map(d => `<div><span class="full">${d.slice(0,3)}</span><span class="short">${d[0]}</span></div>`).join("");
+  const first = new Date(YEAR, cur-1, 1).getDay();
+  const evs = eventsFor(cur);
+  const t = new Date();
+  let h = "<span></span>".repeat(first);
+  for (let d = 1; d <= daysIn(YEAR, cur); d++){
+    const e = evs.find(x => x.d === d && !x.bday);
+    const cls = ["day"];
+    if (e) cls.push("has-event");
+    if (isBday(cur,d)) cls.push("is-bday","has-event");
+    if (sel === d) cls.push("is-sel");
+    if (t.getFullYear()===YEAR && t.getMonth()+1===cur && t.getDate()===d) cls.push("is-today");
+    const emo = isBday(cur,d) ? "🎂" : (e ? e.emo : "");
+    h += `<button type="button" class="${cls.join(" ")}" data-d="${d}" data-emo="${emo}" style="--dc:${CIRCLES[d%CIRCLES.length]}" aria-label="${MONTHS[cur-1]} ${ordinal(d)}">${d}</button>`;
+  }
+  $("mbDays").innerHTML = h;
+  $("dayInfo").innerHTML = sel ? describe(cur, sel) : "Tap a day to read the date in English.";
+  const main = evs.find(e => e.bday) || evs[0];
+  $("monthEmo").textContent = main.emo;
+  $("monthEvent").textContent = `${MONTHS[cur-1]} ${ordinal(main.d)}: ${main.name}`;
+}
+$("mbDays").addEventListener("click", e => {
+  const b = e.target.closest(".day"); if (!b) return;
+  sel = +b.dataset.d; renderBoard();
+});
+$("prev").onclick = () => { if (cur > 1){ cur--; sel = null; renderBoard(); } };
+$("next").onclick = () => { if (cur < 12){ cur++; sel = null; renderBoard(); } };
+
+/* ----- days of the week ----- */
+$("week").innerHTML = DAYS.map((d,i) =>
+  `<div class="wk" style="--c:${DAY_COLORS[i]}"><span class="n">${ordHTML(i+1)}</span><h3>${d}</h3><p>${ORD_WORDS[i]} day · ${d.slice(0,3)}.</p></div>`).join("");
+
+/* ----- months & ordinals chart ----- */
+$("chart").innerHTML = MONTHS.map((m,i) => {
+  const s = SEASONS[seasonOf(i+1, 1)];
+  return `<tr style="--c:var(--m${i+1})"><td>${m}</td><td>${ORD_WORDS[i]} (${ordHTML(i+1)})</td><td>${daysIn(YEAR,i+1)} days · ${s.emo} ${s.name.split(" ")[0]}</td></tr>`;
+}).join("");
+
+/* ----- seasons (with drawn pictures) ----- */
+const ART = {
+  spring:`<svg viewBox="0 0 120 120"><rect x="56" y="62" width="8" height="48" rx="3" fill="#6d4c41"/><circle cx="60" cy="48" r="34" fill="#a5d6a7"/>${[[42,36],[66,30],[78,52],[50,60],[62,48],[36,54]].map(([x,y])=>`<g transform="translate(${x} ${y})">${[0,72,144,216,288].map(a=>`<circle r="4.5" cx="0" cy="-5" fill="#fff" transform="rotate(${a})"/>`).join("")}<circle r="3" fill="#f48fb1"/></g>`).join("")}</svg>`,
+  summer:`<svg viewBox="0 0 120 120"><g stroke="#f9a825" stroke-width="6" stroke-linecap="round">${[0,45,90,135,180,225,270,315].map(a=>`<line x1="60" y1="14" x2="60" y2="26" transform="rotate(${a} 60 60)"/>`).join("")}</g><circle cx="60" cy="60" r="28" fill="#fdd835"/><circle cx="51" cy="56" r="3" fill="#5d4037"/><circle cx="69" cy="56" r="3" fill="#5d4037"/><path d="M50 67q10 9 20 0" stroke="#5d4037" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+  autumn:`<svg viewBox="0 0 120 120"><g><path d="M60 14C84 30 92 58 60 98 28 58 36 30 60 14z" fill="#ef6c00"/><path d="M60 22v86" stroke="#8d4a10" stroke-width="4" stroke-linecap="round"/><path d="M60 46l-14-10M60 46l14-10M60 64l-18-12M60 64l18-12" stroke="#8d4a10" stroke-width="3" stroke-linecap="round"/></g><circle cx="24" cy="92" r="10" fill="#c62828"/><path d="M24 82q2-6 7-6" stroke="#5d4037" stroke-width="2.5" fill="none"/><circle cx="98" cy="96" r="9" fill="#e53935"/><path d="M98 87q2-5 6-5" stroke="#5d4037" stroke-width="2.5" fill="none"/></svg>`,
+  winter:`<svg viewBox="0 0 120 120"><g stroke="#0288d1" stroke-width="6" stroke-linecap="round">${[0,60,120].map(a=>`<g transform="rotate(${a} 60 60)"><line x1="60" y1="14" x2="60" y2="106"/><path d="M48 24l12 12 12-12M48 96l12-12 12 12" fill="none"/></g>`).join("")}</g><circle cx="60" cy="60" r="7" fill="#fff" stroke="#0288d1" stroke-width="4"/></svg>`
+};
+$("seasons").innerHTML = ["spring","summer","autumn","winter"].map(k => {
+  const s = SEASONS[k];
+  return `<article class="season" style="--sc:${s.color};--bg:${s.bg}">
+    <div class="season__art" role="img" aria-label="${s.name} picture">${ART[k]}</div>
+    <div class="season__body"><h3>${s.emo} ${s.name}</h3>
+      <div class="dates">From ${s.start} to ${s.end}</div>
+      <ul>${s.months.map(m=>`<li>${m}</li>`).join("")}</ul>
+      <p>${s.text}</p></div></article>`;
+}).join("");
+
+/* ----- year at a glance ----- */
+function renderYear(){
+  $("year").innerHTML = MONTHS.map((m,i) => {
+    const mn = i+1, evs = eventsFor(mn), first = new Date(YEAR, i, 1).getDay();
+    const evDays = new Set(evs.filter(e=>!e.bday).map(e=>e.d));
+    let grid = DAYS.map(d=>`<b>${d[0]}</b>`).join("") + "<i></i>".repeat(first);
+    for (let d = 1; d <= daysIn(YEAR, mn); d++){
+      const wd = (first + d - 1) % 7;
+      const c = isBday(mn,d) ? "bd" : evDays.has(d) ? "ev" : wd===0 ? "sun" : "";
+      grid += `<i class="${c}">${d}</i>`;
+    }
+    const seas = [...new Set(Array.from({length:daysIn(YEAR,mn)},(_,k)=>SEASONS[seasonOf(mn,k+1)].name.split(" ")[0]))].join(" → ");
+    return `<article class="mcard" style="--c:var(--m${mn})">
+      <div class="mcard__head"><h3>${m}</h3><span>${ORD_WORDS[i]} month</span></div>
+      <div class="mini">${grid}</div>
+      <ul class="events">${evs.map(e=>`<li class="${e.bday?"bd":""}"><span class="emo">${e.emo}</span><span class="d">${ordinal(e.d)}</span><span>${esc(e.name)}</span></li>`).join("")}</ul>
+      <div class="mcard__season">Season: ${seas}</div></article>`;
+  }).join("");
+}
+
+/* ----- personalize dialog ----- */
+const dlg = $("dlg");
+$("fMonth").innerHTML = `<option value="0">Month</option>` + MONTHS.map((m,i)=>`<option value="${i+1}">${m}</option>`).join("");
+function fillDays(){
+  const m = +$("fMonth").value, keep = +$("fDay").value;
+  const n = m ? daysIn(YEAR, m) : 31;
+  $("fDay").innerHTML = `<option value="0">Day</option>` + Array.from({length:n},(_,k)=>`<option value="${k+1}">${ordinal(k+1)}</option>`).join("");
+  $("fDay").value = keep <= n ? keep : 0;
+}
+$("fMonth").onchange = fillDays;
+$("editBtn").onclick = () => {
+  $("fName").value = ME.name || "";
+  $("fMonth").value = ME.month || 0; fillDays(); $("fDay").value = ME.day || 0;
+  dlg.showModal ? dlg.showModal() : dlg.setAttribute("open","");
+};
+dlg.addEventListener("close", () => {
+  if (dlg.returnValue !== "save") return;
+  const m = +$("fMonth").value, d = +$("fDay").value;
+  ME = { name: $("fName").value.trim(), month: m && d ? m : 0, day: m && d ? d : 0 };
+  try { localStorage.setItem("myCalendar", JSON.stringify(ME)); } catch(e){}
+  // put it in the link too, so the teacher sees the same calendar
+  const q = new URLSearchParams();
+  if (ME.name) q.set("name", ME.name);
+  if (ME.month) q.set("birthday", `${pad(ME.month)}-${pad(ME.day)}`);
+  history.replaceState(null, "", location.pathname + (q.toString() ? "?" + q : ""));
+  renderAll();
+});
+
+function renderAll(){ renderMe(); renderToday(); renderBoard(); renderYear(); }
+renderAll();
+</script>
+</body>
+</html>
